@@ -2,21 +2,20 @@ import os
 import subprocess
 
 def build_and_run_project():
-    # Проверяем, собран ли проект
+
     if not os.path.exists("build"):
         os.mkdir("build")
 
-    # Переходим в папку build
     os.chdir("build")
 
-    # Запускаем cmake
+    # Run cmake
     if not os.path.exists("CMakeCache.txt"):
         subprocess.run(["cmake", ".."])
 
-    # Собираем проект
-    subprocess.run(["make"])
+    # Build the project
+    subprocess.run(["cmake", "--build", "."])
 
-    # Запускаем исполняемый файл
+    # Run the executable file
     subprocess.run(["./calc"])
 
 if __name__ == "__main__":
