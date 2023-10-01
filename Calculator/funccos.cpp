@@ -1,4 +1,4 @@
-#include <cmath>
+#include "funccos.hpp"
 
 extern "C" double Cos(double x) 
 {

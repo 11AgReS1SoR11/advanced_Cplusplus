@@ -1,4 +1,4 @@
-#include <cmath>
+#include "funcpow.hpp"
 
 extern "C" double Pow(double x, double y) 
 {
