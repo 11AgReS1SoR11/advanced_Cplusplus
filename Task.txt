@@ -26,3 +26,12 @@ dll, нет никакой dll, какая-то функция бросает и
 
 Оценивается корректность работы с памятью и исключениями, арихтектура
 приложения, работоспособность
+
+
+
+*****
+Installing Catch2 from git repository:
+$ git clone https://github.com/catchorg/Catch2.git
+$ cd Catch2
+$ cmake -Bbuild -H. -DBUILD_TESTING=OFF
+$ sudo cmake --build build/ --target install

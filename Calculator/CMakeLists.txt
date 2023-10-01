@@ -5,5 +5,9 @@ project(Calculator)
 add_executable(calc main.cpp Calculator.cpp)
 
 add_library(funcsin SHARED funcsin.cpp)
+add_library(funccos SHARED funccos.cpp)
+add_library(funcpow SHARED funcpow.cpp)
 
-target_link_libraries(calc funcsin)
+target_link_libraries(calc funcsin funccos funcpow)
+
+add_subdirectory(ut)

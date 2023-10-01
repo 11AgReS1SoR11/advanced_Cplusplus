@@ -18,5 +18,10 @@ def build_and_run_project():
     # Run the executable file
     subprocess.run(["./calc"])
 
+def run_tests():
+    # in future tests will build separate
+    subprocess.run(["./ut/tests"])
+
 if __name__ == "__main__":
     build_and_run_project()
+    run_tests()
