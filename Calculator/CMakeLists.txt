@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(Calculator)
 
-add_executable(calc main.cpp Calculator.cpp Parser.cpp)
+add_executable(calc main.cpp Calculator.cpp Parser.cpp Sorter.cpp)
 
 add_library(funcsin SHARED funcsin.cpp)
 add_library(funccos SHARED funccos.cpp)

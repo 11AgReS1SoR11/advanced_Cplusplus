@@ -1,6 +1,7 @@
 #include "Calculator.hpp"
 
-double Calculator::operator()(double x, double y) const
+double Calculator::operator()(std::string_view expression) const
 {
-    return x + y;
+    auto tokenz = parser(expression);
+    return 0;
 }

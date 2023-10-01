@@ -9,7 +9,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
-add_executable(tests test.cpp ../Parser.cpp)
+add_executable(tests test.cpp ../Parser.cpp ../Sorter.cpp)
 target_link_libraries(tests PRIVATE 
     Catch2::Catch2WithMain 
     # ${CMAKE_CURRENT_BINARY_DIR}/../funcsin 

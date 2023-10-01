@@ -5,6 +5,7 @@
 #include "../funccos.hpp"
 #include "../funcpow.hpp"
 #include "../Parser.hpp"
+#include "../Sorter.hpp"
 
 TEST_CASE("testing the correctness of functions") 
 {
@@ -194,5 +195,15 @@ TEST_CASE("testing parser")
         std::vector<std::string_view> tokens{};
         REQUIRE_THROWS_WITH(tokens = parser(expression), "Wrong expression (check brackets)");
     }
+}
 
+TEST_CASE("testing sorter")
+{
+    std::vector<std::string_view> tokens{"2", "+", "3", "*", "1"};
+    Sorter sorter;
+    auto sorted_tokens = sorter(tokens);
+    for (auto m : tokens)
+    {
+        std::cout << m << std::endl;
+    }
 }
