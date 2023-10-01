@@ -12,4 +12,5 @@ public:
 private:
     void сheck_bracket_sequence(std::string_view) const;
     std::vector<std::string_view> tokenize(std::string_view) const;
+    bool isfunc(std::string_view) const;
 };

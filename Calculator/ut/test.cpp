@@ -82,6 +82,41 @@ TEST_CASE("testing parser")
         REQUIRE(tokens[4] == ")");
     }
 
+    SECTION("simple expression #5 (sin)")
+    {
+        std::string expression = "sin(3)";
+        Parser parser{};
+        std::vector<std::string_view> tokens{};
+        REQUIRE_NOTHROW(tokens = parser(expression));
+        REQUIRE(tokens[0] == "sin");
+        REQUIRE(tokens[1] == "(");
+        REQUIRE(tokens[2] == "3");
+        REQUIRE(tokens[3] == ")");
+    }
+
+    SECTION("simple expression #6 (cos)")
+    {
+        std::string expression = "cos(3)";
+        Parser parser{};
+        std::vector<std::string_view> tokens{};
+        REQUIRE_NOTHROW(tokens = parser(expression));
+        REQUIRE(tokens[0] == "cos");
+        REQUIRE(tokens[1] == "(");
+        REQUIRE(tokens[2] == "3");
+        REQUIRE(tokens[3] == ")");
+    }
+
+    SECTION("simple expression #7 (^)")
+    {
+        std::string expression = "3^5";
+        Parser parser{};
+        std::vector<std::string_view> tokens{};
+        REQUIRE_NOTHROW(tokens = parser(expression));
+        REQUIRE(tokens[0] == "3");
+        REQUIRE(tokens[1] == "^");
+        REQUIRE(tokens[2] == "5");
+    }
+
     SECTION("complex expression #1")
     {
         std::string expression = "3+2/2.5*14";
@@ -113,6 +148,51 @@ TEST_CASE("testing parser")
         REQUIRE(tokens[7] == ")");
         REQUIRE(tokens[8] == "*");
         REQUIRE(tokens[9] == "0.1");
+    }
+
+    SECTION("complex expression #3")
+    {
+        std::string expression = "-3/(2-2.5)*0.1";
+        Parser parser{};
+        std::vector<std::string_view> tokens{};
+        REQUIRE_NOTHROW(tokens = parser(expression));
+        REQUIRE(tokens[0] == "-");
+        REQUIRE(tokens[1] == "3");
+        REQUIRE(tokens[2] == "/");
+        REQUIRE(tokens[3] == "(");
+        REQUIRE(tokens[4] == "2");
+        REQUIRE(tokens[5] == "-");
+        REQUIRE(tokens[6] == "2.5");
+        REQUIRE(tokens[7] == ")");
+        REQUIRE(tokens[8] == "*");
+        REQUIRE(tokens[9] == "0.1");
+    }
+
+    SECTION("complex expression #3")
+    {
+        std::string expression = "cos(5*2)^sin(3)";
+        Parser parser{};
+        std::vector<std::string_view> tokens{};
+        REQUIRE_NOTHROW(tokens = parser(expression));
+        REQUIRE(tokens[0] == "cos");
+        REQUIRE(tokens[1] == "(");
+        REQUIRE(tokens[2] == "5");
+        REQUIRE(tokens[3] == "*");
+        REQUIRE(tokens[4] == "2");
+        REQUIRE(tokens[5] == ")");
+        REQUIRE(tokens[6] == "^");
+        REQUIRE(tokens[7] == "sin");
+        REQUIRE(tokens[8] == "(");
+        REQUIRE(tokens[9] == "3");
+        REQUIRE(tokens[10] == ")");
+    }
+
+    SECTION("failure outcome")
+    {
+        std::string expression = "(3+2)(";
+        Parser parser{};
+        std::vector<std::string_view> tokens{};
+        REQUIRE_THROWS_WITH(tokens = parser(expression), "Wrong expression (check brackets)");
     }
 
 }
