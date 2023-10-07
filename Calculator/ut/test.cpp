@@ -1,10 +1,10 @@
 #include "catch2/catch_all.hpp"
-#include <iostream>
 
 #include "../funcsin.hpp"
 #include "../funccos.hpp"
 #include "../funcpow.hpp"
 #include "../Calculator.hpp"
+#include <cmath>
 
 TEST_CASE("testing the correctness of functions") 
 {
@@ -68,7 +68,7 @@ TEST_CASE("testing parser")
         REQUIRE(tokens[0] == "-3");
     }
 
-    SECTION("simple expression #4 (brackets)")
+    SECTION("simple expression #5 (brackets)")
     {
         std::string expression = "(3+2)";
         Parser parser{};
@@ -81,7 +81,7 @@ TEST_CASE("testing parser")
         REQUIRE(tokens[4] == ")");
     }
 
-    SECTION("simple expression #5 (sin)")
+    SECTION("simple expression #6 (sin)")
     {
         std::string expression = "sin(3)";
         Parser parser{};
@@ -93,7 +93,7 @@ TEST_CASE("testing parser")
         REQUIRE(tokens[3] == ")");
     }
 
-    SECTION("simple expression #6 (cos)")
+    SECTION("simple expression #7 (cos)")
     {
         std::string expression = "cos(3)";
         Parser parser{};
@@ -105,7 +105,7 @@ TEST_CASE("testing parser")
         REQUIRE(tokens[3] == ")");
     }
 
-    SECTION("simple expression #7 (^)")
+    SECTION("simple expression #8 (^)")
     {
         std::string expression = "3^5";
         Parser parser{};
@@ -281,13 +281,13 @@ TEST_CASE("testing calculator")
         REQUIRE(answer == -144);
     }
 
-    // SECTION("complex expression #2")
-    // {
-    //     std::string expression = "cos(3.14)*15^(4/2-sin(0+0))";
-    //     Calculator calc{};
-    //     double answer;
-    //     REQUIRE_NOTHROW(answer = calc(expression));
-    //     REQUIRE(answer == -144);
-    // }
+    SECTION("complex expression #2")
+    {
+        std::string expression = "cos(3.14)*15^(4/2-sin(0+0))";
+        Calculator calc{};
+        double answer;
+        REQUIRE_NOTHROW(answer = calc(expression));
+        REQUIRE(fabs(answer - 224.9994292778) < 0.000001);
+    }
 
 }
