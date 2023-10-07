@@ -2,6 +2,7 @@
 
 #include "Parser.hpp"
 #include "Sorter.hpp"
+#include <unordered_map>
 
 class Calculator
 {

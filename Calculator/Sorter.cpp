@@ -1,21 +1,22 @@
 #include "Sorter.hpp"
-
-#include <unordered_map>
+#include <iostream>
 #include <stack>
 
-std::vector<std::string_view> Sorter::operator()(std::vector<std::string_view> words) const
+std::vector<std::string_view> Sorter::operator()(const std::vector<std::string_view> words) const
 {
-    std::unordered_map<std::string_view, size_t> map = { // сделать constexpr
-        {"+", 2},
-        {"-", 2},
-        {"*", 3},
-        {"/", 3}
-    };
-
-    std::vector<std::string_view> res{words.size()};
+    std::vector<std::string_view> res{};
     std::stack<std::string_view> stack{};
-    for (auto expression : words)
+    // for (auto m : words)
+    // {
+    //     std::cout << m << " " << words.size() << std::endl;
+    // }
+    for (auto const expression : words)
     {
+        // std::cout << "Provirka : " << expression << " size = " << res.size() << " " << stack.size() << std::endl;
+        // for (auto m : res)
+        // {
+        //     std::cout << m << std::endl;
+        // }
         if (IsAlNum(expression))
         {
             res.push_back(expression);
@@ -33,7 +34,7 @@ std::vector<std::string_view> Sorter::operator()(std::vector<std::string_view> w
         {
             stack.push(expression);
         }
-        else if (stack.empty() || (map[stack.top()] < map[expression]))
+        else if (stack.empty() || (priorities.at(stack.top()) < priorities.at(expression)))
         {
             stack.push(expression);
         }
@@ -43,10 +44,15 @@ std::vector<std::string_view> Sorter::operator()(std::vector<std::string_view> w
             {
                 res.push_back(stack.top());
                 stack.pop();
-            } while (!(stack.empty() || (map[stack.top()] < map[expression])));
+            } while (!(stack.empty() || (priorities.at(stack.top()) < priorities.at(expression))));
             stack.push(expression);
         }
+        // for (auto m : priorities)
+        // {
+        //     std::cout << m.first << " " << m.second << " size = " << priorities.size() << std::endl;
+        // }
     }
+    // std::cout << "Provirka last: " << res.size() << std::endl;
 
     while (!stack.empty())
     {
@@ -54,16 +60,36 @@ std::vector<std::string_view> Sorter::operator()(std::vector<std::string_view> w
         stack.pop();
     }
 
+    // std::cout << "Provirka last: " << res.size() << std::endl;
+    // for (auto m : res)
+    // {
+    //     std::cout << m << std::endl;
+    // }
+    // std::cout << "end last: " << std::endl;
+
     return res;
 }
 
-bool Sorter::IsAlNum(std::string_view str) const
+bool Sorter::IsAlNum(std::string_view str) const noexcept
 {
-    for (auto c : str)
+    if (str.empty()) return false;
+    bool have_dot = false;
+    for (auto const c : str)
     {
-        if (!(std::isdigit(c) || c == '.'))
+        if (!std::isdigit(c))
         {
-            return false;
+            if (c == '.' && have_dot)
+            {
+                return false;
+            }
+            else if (c == '.')
+            {
+                have_dot = true;
+            }
+            else if (str[0] != '-' || str.size() <= 1)
+            {
+                return false;
+            }
         }
     }
     return true;

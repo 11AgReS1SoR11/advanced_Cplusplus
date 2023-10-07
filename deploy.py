@@ -10,7 +10,7 @@ def build_and_run_project():
 
     # Run cmake
     if not os.path.exists("CMakeCache.txt"):
-        subprocess.run(["cmake", ".."])
+        subprocess.run(["cmake", "../Calculator"])
 
     # Build the project
     subprocess.run(["cmake", "--build", "."])

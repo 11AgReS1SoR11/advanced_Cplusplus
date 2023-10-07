@@ -4,8 +4,7 @@
 #include "../funcsin.hpp"
 #include "../funccos.hpp"
 #include "../funcpow.hpp"
-#include "../Parser.hpp"
-#include "../Sorter.hpp"
+#include "../Calculator.hpp"
 
 TEST_CASE("testing the correctness of functions") 
 {
@@ -66,8 +65,7 @@ TEST_CASE("testing parser")
         Parser parser{};
         std::vector<std::string_view> tokens{};
         REQUIRE_NOTHROW(tokens = parser(expression));
-        REQUIRE(tokens[0] == "-");
-        REQUIRE(tokens[1] == "3");
+        REQUIRE(tokens[0] == "-3");
     }
 
     SECTION("simple expression #4 (brackets)")
@@ -139,34 +137,15 @@ TEST_CASE("testing parser")
         Parser parser{};
         std::vector<std::string_view> tokens{};
         REQUIRE_NOTHROW(tokens = parser(expression));
-        REQUIRE(tokens[0] == "-");
-        REQUIRE(tokens[1] == "3");
-        REQUIRE(tokens[2] == "/");
-        REQUIRE(tokens[3] == "(");
-        REQUIRE(tokens[4] == "2");
-        REQUIRE(tokens[5] == "-");
-        REQUIRE(tokens[6] == "2.5");
-        REQUIRE(tokens[7] == ")");
-        REQUIRE(tokens[8] == "*");
-        REQUIRE(tokens[9] == "0.1");
-    }
-
-    SECTION("complex expression #3")
-    {
-        std::string expression = "-3/(2-2.5)*0.1";
-        Parser parser{};
-        std::vector<std::string_view> tokens{};
-        REQUIRE_NOTHROW(tokens = parser(expression));
-        REQUIRE(tokens[0] == "-");
-        REQUIRE(tokens[1] == "3");
-        REQUIRE(tokens[2] == "/");
-        REQUIRE(tokens[3] == "(");
-        REQUIRE(tokens[4] == "2");
-        REQUIRE(tokens[5] == "-");
-        REQUIRE(tokens[6] == "2.5");
-        REQUIRE(tokens[7] == ")");
-        REQUIRE(tokens[8] == "*");
-        REQUIRE(tokens[9] == "0.1");
+        REQUIRE(tokens[0] == "-3");
+        REQUIRE(tokens[1] == "/");
+        REQUIRE(tokens[2] == "(");
+        REQUIRE(tokens[3] == "2");
+        REQUIRE(tokens[4] == "-");
+        REQUIRE(tokens[5] == "2.5");
+        REQUIRE(tokens[6] == ")");
+        REQUIRE(tokens[7] == "*");
+        REQUIRE(tokens[8] == "0.1");
     }
 
     SECTION("complex expression #3")
@@ -199,11 +178,116 @@ TEST_CASE("testing parser")
 
 TEST_CASE("testing sorter")
 {
-    std::vector<std::string_view> tokens{"2", "+", "3", "*", "1"};
-    Sorter sorter;
-    auto sorted_tokens = sorter(tokens);
-    for (auto m : tokens)
+    SECTION("simple expression #1")
     {
-        std::cout << m << std::endl;
+        std::vector<std::string_view> tokens{"2", "+", "3", "*", "1"};
+        Sorter sorter{};
+        std::vector<std::string_view> sorted_tokens{};
+        REQUIRE_NOTHROW(sorted_tokens = sorter(tokens));
+        REQUIRE(sorted_tokens[0] == "2");
+        REQUIRE(sorted_tokens[1] == "3");
+        REQUIRE(sorted_tokens[2] == "1");
+        REQUIRE(sorted_tokens[3] == "*");
+        REQUIRE(sorted_tokens[4] == "+");
     }
+
+    SECTION("simple expression #2")
+    {
+        std::vector<std::string_view> tokens{"(", "2", "+", "3", ")", "*", "1"};
+        Sorter sorter{};
+        std::vector<std::string_view> sorted_tokens{};
+        REQUIRE_NOTHROW(sorted_tokens = sorter(tokens));
+        REQUIRE(sorted_tokens[0] == "2");
+        REQUIRE(sorted_tokens[1] == "3");
+        REQUIRE(sorted_tokens[2] == "+");
+        REQUIRE(sorted_tokens[3] == "1");
+        REQUIRE(sorted_tokens[4] == "*");
+    }
+
+    SECTION("complex expression #1")
+    {
+        std::vector<std::string_view> tokens{"sin", "(", "2", ")", "*", "(", "-2", "+", "13", ")"};
+        Sorter sorter{};
+        std::vector<std::string_view> sorted_tokens{};
+        REQUIRE_NOTHROW(sorted_tokens = sorter(tokens));
+        REQUIRE(sorted_tokens[0] == "2");
+        REQUIRE(sorted_tokens[1] == "sin");
+        REQUIRE(sorted_tokens[2] == "-2");
+        REQUIRE(sorted_tokens[3] == "13");
+        REQUIRE(sorted_tokens[4] == "+");
+        REQUIRE(sorted_tokens[5] == "*");
+    }
+
+    SECTION("complex expression #2")
+    {
+        std::vector<std::string_view> tokens{"4", "+", "2", "^", "(", "-5", "*", "sin", "(", "12", ")", ")"};
+        Sorter sorter{};
+        std::vector<std::string_view> sorted_tokens{};
+        REQUIRE_NOTHROW(sorted_tokens = sorter(tokens));
+        REQUIRE(sorted_tokens[0] == "4");
+        REQUIRE(sorted_tokens[1] == "2");
+        REQUIRE(sorted_tokens[2] == "-5");
+        REQUIRE(sorted_tokens[3] == "12");
+        REQUIRE(sorted_tokens[4] == "sin");
+        REQUIRE(sorted_tokens[5] == "*");
+        REQUIRE(sorted_tokens[6] == "^");
+    }
+}
+
+TEST_CASE("testing calculator")
+{
+    SECTION("simple expression #1")
+    {
+        std::string expression = "2+2";
+        Calculator calc{};
+        double answer;
+        REQUIRE_NOTHROW(answer = calc(expression));
+        REQUIRE(answer == 4);
+    }
+
+    SECTION("simple expression #2")
+    {
+        std::string expression = "-2.5+2.5*2";
+        Calculator calc{};
+        double answer;
+        REQUIRE_NOTHROW(answer = calc(expression));
+        REQUIRE(answer == 2.5);
+    }
+
+    SECTION("simple expression #3")
+    {
+        std::string expression = "sin(0)";
+        Calculator calc{};
+        double answer;
+        REQUIRE_NOTHROW(answer = calc(expression));
+        REQUIRE(answer == 0);
+    }
+
+    SECTION("simple expression #3")
+    {
+        std::string expression = "3*(3-1)";
+        Calculator calc{};
+        double answer;
+        REQUIRE_NOTHROW(answer = calc(expression));
+        REQUIRE(answer == 6);
+    }
+
+    SECTION("complex expression #1")
+    {
+        std::string expression = "sin(0)-12^(3-1)";
+        Calculator calc{};
+        double answer;
+        REQUIRE_NOTHROW(answer = calc(expression));
+        REQUIRE(answer == -144);
+    }
+
+    // SECTION("complex expression #2")
+    // {
+    //     std::string expression = "cos(3.14)*15^(4/2-sin(0+0))";
+    //     Calculator calc{};
+    //     double answer;
+    //     REQUIRE_NOTHROW(answer = calc(expression));
+    //     REQUIRE(answer == -144);
+    // }
+
 }

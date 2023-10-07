@@ -50,7 +50,7 @@ std::vector<std::string_view> Parser::tokenize(std::string_view expression) cons
 
     for (long unsigned int idx = 0; idx < expression.size(); ++idx)
     {
-        // don't work for inner brackets
+        // while don't work for inner brackets
         if (expression[idx] == '(')
         {
             last_token_idx = expression.find(')', idx);
@@ -73,12 +73,12 @@ std::vector<std::string_view> Parser::tokenize(std::string_view expression) cons
 
             idx = last_token_idx;
         }
-        else if (expression[idx] == '+' || expression[idx] == '*' || expression[idx] == '/' || expression[idx] == '-' || expression[idx] == '^')
+        else if (expression[idx] == '+' || expression[idx] == '*' || expression[idx] == '/' || isbinaryminus(expression, idx) || expression[idx] == '^')
         {
             // add prev operand
             if (last_token_idx != idx)
             {
-                if (last_token_idx == 0 && expression[last_token_idx] != '-') // some problems with first token
+                if (last_token_idx == 0) // some problems with first token
                 {
                     token = std::string_view{expression.data(), idx};
                 }
@@ -90,28 +90,23 @@ std::vector<std::string_view> Parser::tokenize(std::string_view expression) cons
             }
             // add operand
             token = std::string_view{expression.data() + idx, 1};
-            last_token_idx = idx;
             tokens.push_back(token);
+
+            last_token_idx = idx;
         }
-        else if (idx + 2 < expression.size() && isfunc({expression.data() + idx, 3})) // a little bit hardcode, but for sin and cos norm
+        else if (idx + 3 <= expression.size() && isfunc({expression.data() + idx, 3})) // a little bit hardcode, but for sin and cos norm
         {
             // add func
             token = std::string_view{expression.data() + idx, 3};
             last_token_idx = idx += 2;
+
             tokens.push_back(token);
         }
     }
 
-    if (last_token_idx == 0 && expression[last_token_idx] != '-')
-    {
-        token = std::string_view{expression.data(), expression.size()};
-        tokens.push_back(token);
-    }
-    else if (last_token_idx != expression.size() - 1)
-    {
-        token = std::string_view{expression.data() + last_token_idx + 1, expression.size() - last_token_idx - 1};
-        tokens.push_back(token);
-    }
+    // add last token
+    token = std::string_view{expression.data() + (last_token_idx ? last_token_idx + 1 : 0), expression.size() - (last_token_idx ? last_token_idx + 1 : 0)};
+    if (!token.empty()) { tokens.push_back(token); }
 
     return tokens;
 }
@@ -121,6 +116,15 @@ bool Parser::isfunc(std::string_view str) const
     if (str.size() >= 3 && 
         (str[0] == 's' && str[1] == 'i' && str[2] == 'n' ||
         str[0] == 'c' && str[1] == 'o' && str[2] == 's'))
+    {
+        return true;
+    }
+    return false;
+}
+
+bool Parser::isbinaryminus(std::string_view expression, int const idx) const
+{
+    if (expression[idx] == '-' && !((idx > 0 && expression[idx-1] == '(') || idx == 0)) // unary minus [only after '(']
     {
         return true;
     }
