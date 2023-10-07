@@ -1,5 +1,9 @@
 #include "Calculator.hpp"
 
+#include "plugins/funcsin.hpp"
+#include "plugins/funccos.hpp"
+#include "plugins/funcpow.hpp"
+
 #include <stack>
 #include <charconv>
 #include <cmath>
@@ -41,11 +45,11 @@ double Calculator::operator()(std::string_view expression) const
             } else if (token == "^") {
                 double operand1 = operands.top();
                 operands.pop();
-                operands.push(std::pow(operand1, operand2));
+                operands.push(MyFunc::Pow(operand1, operand2));
             } else if (token == "sin") {
-                operands.push(std::sin(operand2));
+                operands.push(MyFunc::Sin(operand2));
             } else if (token == "cos") {
-                operands.push(std::cos(operand2));
+                operands.push(MyFunc::Cos(operand2));
             }
         }
     }
