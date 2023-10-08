@@ -9,8 +9,13 @@
 
 double Calculator::operator()(std::string_view expression)
 {
+    logger << "Parsing expression";
     auto const tokenz = parser(expression);
+
+    logger << "Infix to RPN";
     auto const sorted_tokenz = sorter(tokenz);
+
+    logger << "Start calculating";
     std::stack<double> operands{};
     for (auto const token : sorted_tokenz)
     {
@@ -44,15 +49,20 @@ double Calculator::operator()(std::string_view expression)
                     throw std::runtime_error("division by 0");
                 operands.push(operand1 / operand2);
             } else if (token == "^") {
+                logger << "Loading function: " << "Pow" << " from" << "plugins/libfuncpow.so";
                 auto Pow = loader.loadFunction<double(double, double)>("plugins/libfuncpow.so", "Pow");
 
                 double operand1 = operands.top();
                 operands.pop();
                 operands.push(Pow(operand1, operand2));
             } else if (token == "sin") {
+                logger << "Loading function: " << "Sin" << " from" << "plugins/libfuncsin.so";
+    
                 auto Sin = loader.loadFunction<double(double)>("plugins/libfuncsin.so", "Sin");
                 operands.push(Sin(operand2));
             } else if (token == "cos") {
+                logger << "Loading function: " << "Cos" << " from" << "plugins/libfunccos.so";
+
                 auto Cos = loader.loadFunction<double(double)>("plugins/libfunccos.so", "Cos");
                 operands.push(Cos(operand2));
             } else {
@@ -61,5 +71,6 @@ double Calculator::operator()(std::string_view expression)
         }
     }
 
+    logger << "Calculator successfully calculates";
     return operands.top();
 }

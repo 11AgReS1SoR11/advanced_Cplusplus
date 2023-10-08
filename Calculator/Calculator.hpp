@@ -3,11 +3,12 @@
 #include "Parser.hpp"
 #include "Sorter.hpp"
 #include "Loader.hpp"
+#include "Logger.hpp"
 
 class Calculator
 {
 public:
-    Calculator() = default;
+    Calculator() : logger{Logger::getInstance()} {}
     ~Calculator() = default;
     double operator()(std::string_view);
 
@@ -20,4 +21,5 @@ private:
     Parser parser;
     Sorter sorter;
     Loader loader;
+    Logger& logger;
 };

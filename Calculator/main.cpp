@@ -12,7 +12,7 @@ int main()
     expression = "sin(28900.195)/19.5^(1/cos(3-27.5*3))";
     std::cout << calc(expression) << std::endl;
 
-    try 
+    try
     {
         expression = "1/0";
         double result = calc(expression);
