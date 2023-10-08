@@ -2,13 +2,14 @@
 
 #include "Parser.hpp"
 #include "Sorter.hpp"
+#include "Loader.hpp"
 
 class Calculator
 {
 public:
     Calculator() = default;
     ~Calculator() = default;
-    double operator()(std::string_view) const;
+    double operator()(std::string_view);
 
     Calculator(const Calculator&) = delete;
     Calculator& operator=(const Calculator&) = delete;
@@ -18,4 +19,5 @@ public:
 private:
     Parser parser;
     Sorter sorter;
+    Loader loader;
 };

@@ -6,6 +6,7 @@
 std::vector<std::string_view> Parser::operator()(std::string_view expression) const
 {
     сheck_bracket_sequence(expression);
+    check_validity(expression);
     return tokenize(expression);
 }
 
@@ -38,6 +39,26 @@ void Parser::сheck_bracket_sequence(std::string_view expression) const
     if (!S.empty())
     {
         throw std::runtime_error("Wrong expression (check brackets)");
+    }
+}
+
+void Parser::check_validity(std::string_view expression) const
+{
+    for (long unsigned int idx = 0; idx < expression.size(); ++idx)
+    {
+        // check for num or operator
+        if (!(isoperator(expression[idx]) || expression[idx] == '-' || std::isdigit(expression[idx]) || expression[idx] == '.'))
+        {
+            // check for func
+            if (idx + 3 <= expression.size() && isfunc({expression.data() + idx, 3}))
+            {
+                idx += 2;
+            }
+            else
+            {
+                throw std::runtime_error("Incorrect enter");
+            }
+        }
     }
 }
 
@@ -77,7 +98,7 @@ std::vector<std::string_view> Parser::tokenize(std::string_view expression) cons
     return tokens;
 }
 
-bool Parser::isfunc(std::string_view str) const
+bool Parser::isfunc(std::string_view str) const noexcept
 {
     if (str.size() >= 3 && 
         (str[0] == 's' && str[1] == 'i' && str[2] == 'n' ||
@@ -88,7 +109,7 @@ bool Parser::isfunc(std::string_view str) const
     return false;
 }
 
-bool Parser::isbinaryminus(std::string_view expression, int const idx) const
+bool Parser::isbinaryminus(std::string_view expression, int const idx) const noexcept
 {
     if (expression[idx] == '-' && !((idx > 0 && expression[idx-1] == '(') || idx == 0)) // unary minus [only after '(']
     {
@@ -97,7 +118,7 @@ bool Parser::isbinaryminus(std::string_view expression, int const idx) const
     return false;
 }
 
-bool Parser::isoperator(const char c) const
+bool Parser::isoperator(const char c) const noexcept
 {
     if (c == '(' || c == ')' || c == '+' || c == '*' || c == '/' || c == '^')
     {

@@ -3,7 +3,7 @@
 #include <stack>
 #include <cctype>
 
-std::vector<std::string_view> Sorter::operator()(const std::vector<std::string_view> words) const
+std::vector<std::string_view> Sorter::operator()(const std::vector<std::string_view> words) const noexcept
 {
     std::vector<std::string_view> res{};
     std::stack<std::string_view> stack{};

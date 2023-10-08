@@ -6,9 +6,8 @@
 
 #include <stack>
 #include <charconv>
-#include <cmath>
 
-double Calculator::operator()(std::string_view expression) const
+double Calculator::operator()(std::string_view expression)
 {
     auto const tokenz = parser(expression);
     auto const sorted_tokenz = sorter(tokenz);
@@ -41,15 +40,23 @@ double Calculator::operator()(std::string_view expression) const
             } else if (token == "/") {
                 double operand1 = operands.top();
                 operands.pop();
+                if (operand2 == 0)
+                    throw std::runtime_error("division by 0");
                 operands.push(operand1 / operand2);
             } else if (token == "^") {
+                auto Pow = loader.loadFunction<double(double, double)>("plugins/libfuncpow.so", "Pow");
+
                 double operand1 = operands.top();
                 operands.pop();
-                operands.push(MyFunc::Pow(operand1, operand2));
+                operands.push(Pow(operand1, operand2));
             } else if (token == "sin") {
-                operands.push(MyFunc::Sin(operand2));
+                auto Sin = loader.loadFunction<double(double)>("plugins/libfuncsin.so", "Sin");
+                operands.push(Sin(operand2));
             } else if (token == "cos") {
-                operands.push(MyFunc::Cos(operand2));
+                auto Cos = loader.loadFunction<double(double)>("plugins/libfunccos.so", "Cos");
+                operands.push(Cos(operand2));
+            } else {
+                throw std::runtime_error("Incorect enter: " + std::string(token.data()));
             }
         }
     }

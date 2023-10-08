@@ -234,6 +234,39 @@ TEST_CASE("testing sorter")
     }
 }
 
+TEST_CASE("testing loader")
+{
+    SECTION("load sin and cos")
+    {
+        Loader loader{};
+        REQUIRE_NOTHROW(loader.loadFunction<double(double)>("plugins/libfuncsin.so", "Sin"));
+        auto Sin = loader.loadFunction<double(double)>("plugins/libfuncsin.so", "Sin");
+        REQUIRE(Sin(0) == 0);
+        REQUIRE_NOTHROW(loader.loadFunction<double(double)>("plugins/libfunccos.so", "Cos"));
+        auto Cos = loader.loadFunction<double(double)>("plugins/libfunccos.so", "Cos");
+        REQUIRE(Cos(0) == 1);
+    }
+
+    SECTION("load ^ (two arguments)")
+    {
+        Loader loader{};
+        REQUIRE_NOTHROW(loader.loadFunction<double(double, double)>("plugins/libfuncpow.so", "Pow"));
+        auto Pow = loader.loadFunction<double(double, double)>("plugins/libfuncpow.so", "Pow");
+        REQUIRE(Pow(2,2) == 4);
+    }
+
+    SECTION("failure outcome")
+    {
+        Loader loader{};
+        REQUIRE_THROWS_WITH(loader.loadFunction<double(double, double)>("PLUGIN/libfuncpow.so", "Pow"), 
+        "Error loading library: PLUGIN/libfuncpow.so: cannot open shared object file: No such file or directory");
+
+        // don't cross platform, but working
+        // REQUIRE_THROWS_WITH(loader.loadFunction<double(double, double)>("plugins/libfuncpow.so", "tangens"), 
+        // "Error loading symbol: /home/daniil/Рабочий стол/advanced_c/advanced_Cplusplus-1/build/plugins/libfuncpow.so: undefined symbol: tangens");
+    }
+}
+
 TEST_CASE("testing calculator")
 {
     SECTION("simple expression #1")
@@ -290,4 +323,38 @@ TEST_CASE("testing calculator")
         REQUIRE(fabs(answer - -224.9997146387) < 0.000001);
     }
 
+    SECTION("failure outcome")
+    {
+        SECTION("Incorrect enter #1")
+        {
+            std::string expression = "2+3-(1";
+            Calculator calc{};
+            double answer;
+            REQUIRE_THROWS_WITH(answer = calc(expression), "Wrong expression (check brackets)");
+        }
+
+        SECTION("Incorrect enter #2")
+        {
+            std::string expression = "2+3-Yaml";
+            Calculator calc{};
+            double answer;
+            REQUIRE_THROWS_WITH(answer = calc(expression), "Incorrect enter");
+        }
+
+        SECTION("Incorrect enter #3")
+        {
+            std::string expression = "1+tg(2)";
+            Calculator calc{};
+            double answer;
+            REQUIRE_THROWS_WITH(answer = calc(expression), "Incorrect enter");
+        }
+
+        SECTION("Division by zero")
+        {
+            std::string expression = "10/0";
+            Calculator calc{};
+            double answer;
+            REQUIRE_THROWS_WITH(answer = calc(expression), "division by 0");
+        }
+    }
 }

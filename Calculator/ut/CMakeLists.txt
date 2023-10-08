@@ -12,9 +12,6 @@ FetchContent_MakeAvailable(Catch2)
 add_executable(tests test.cpp ../Parser.cpp ../Sorter.cpp ../Calculator.cpp)
 target_link_libraries(tests PRIVATE 
     Catch2::Catch2WithMain 
-    # ${CMAKE_CURRENT_BINARY_DIR}/../funcsin 
-    # ${CMAKE_CURRENT_BINARY_DIR}/../funccos 
-    # ${CMAKE_CURRENT_BINARY_DIR}/../funcpow)
     funcsin
     funccos
     funcpow)

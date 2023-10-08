@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string_view>
 #include <vector>
 #include <unordered_map>
@@ -7,7 +9,7 @@ class Sorter
 public:
     Sorter() {}
 
-    std::vector<std::string_view> operator()(const std::vector<std::string_view>) const;
+    std::vector<std::string_view> operator()(const std::vector<std::string_view>) const noexcept;
 
     bool IsAlNum(std::string_view) const noexcept;
 
