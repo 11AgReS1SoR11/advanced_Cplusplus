@@ -1,12 +1,19 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
 #include <string>
 
 class Logger
 {
 private:
-    Logger() = default;
+    std::ofstream logFile;
+
+    Logger() 
+    {
+        logFile.open("log.txt");
+    }
+
 public:
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;
@@ -21,19 +28,24 @@ public:
 
     Logger& operator<<(char const* message) 
     {
-        std::cout << "[LOG] " << message << std::endl;
+        logFile << "[LOG] " << message << std::endl;
         return *this;
     }
 
     Logger& operator<<(const std::string& message) 
     {
-        std::cout << "[LOG] " << message << std::endl;
+        logFile << "[LOG] " << message << std::endl;
         return *this;
     }
 
     Logger& operator<<(std::string_view message) 
     {
-        std::cout << "[LOG] " << message << std::endl;
+        logFile << "[LOG] " << message << std::endl;
         return *this;
+    }
+
+    ~Logger()
+    {
+        logFile.close();
     }
 };

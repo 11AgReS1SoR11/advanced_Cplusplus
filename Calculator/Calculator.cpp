@@ -9,6 +9,7 @@
 
 double Calculator::operator()(std::string_view expression)
 {
+    logger << "Expression: " << expression;
     logger << "Parsing expression";
     auto const tokenz = parser(expression);
 

@@ -34,7 +34,7 @@ The Calculator will dynamically load the required mathematical functions from sh
 Testing
 
 The project includes a comprehensive suite of test cases using the Catch2 testing framework. You can run the tests by executing the following command:
-    .Calculator/ut/tests
+    doit run_tests
 
 
 Author
