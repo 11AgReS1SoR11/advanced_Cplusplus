@@ -1,9 +1,5 @@
 #include "Calculator.hpp"
 
-#include "plugins/funcsin.hpp"
-#include "plugins/funccos.hpp"
-#include "plugins/funcpow.hpp"
-
 #include <stack>
 #include <charconv>
 
@@ -50,28 +46,29 @@ double Calculator::operator()(std::string_view expression)
                     throw std::runtime_error("division by 0");
                 operands.push(operand1 / operand2);
             } else if (token == "^") {
-                logger << "Loading function: " << "Pow" << " from" << "plugins/libfuncpow.so";
-                auto Pow = loader.loadFunction<double(double, double)>("plugins/libfuncpow.so", "Pow");
+                logger << "Loading function: " << "^";
+                auto Pow = loader.loadFunction<double(double, double)>("pow");
 
                 double operand1 = operands.top();
                 operands.pop();
                 operands.push(Pow(operand1, operand2));
             } else if (token == "sin") {
-                logger << "Loading function: " << "Sin" << " from" << "plugins/libfuncsin.so";
+                logger << "Loading function: " << token;
     
-                auto Sin = loader.loadFunction<double(double)>("plugins/libfuncsin.so", "Sin");
-                operands.push(Sin(operand2));
+                auto Func = loader.loadFunction<double(double)>("sin");
+                operands.push(Func(operand2));
             } else if (token == "cos") {
-                logger << "Loading function: " << "Cos" << " from" << "plugins/libfunccos.so";
-
-                auto Cos = loader.loadFunction<double(double)>("plugins/libfunccos.so", "Cos");
-                operands.push(Cos(operand2));
+                logger << "Loading function: " << token;
+    
+                auto Func = loader.loadFunction<double(double)>("cos");
+                operands.push(Func(operand2));
             } else {
-                throw std::runtime_error("Incorect enter: " + std::string(token.data()));
+                throw std::runtime_error("Undefined function");
             }
         }
     }
 
     logger << "Calculator successfully calculates";
-    return operands.top();
+    double ans = operands.top(); 
+    return ans;
 }

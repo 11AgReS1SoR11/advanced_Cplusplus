@@ -18,10 +18,10 @@ def build_and_run_project():
     subprocess.run(["./calc"])
 
 def build_and_run_tests():
-    if not os.path.exists("build"):
-        os.mkdir("build")
+    if not os.path.exists("build/ut"):
+        os.mkdir("build/ut")
 
-    os.chdir("build")
+    os.chdir("build/ut")
 
     # Run cmake
     if not os.path.exists("CMakeCache.txt"):
@@ -31,7 +31,7 @@ def build_and_run_tests():
     subprocess.run(["cmake", "--build", "."])
 
     # Run the executable file
-    subprocess.run(["./ut/tests"])
+    subprocess.run(["./tests"])
 
 if __name__ == "__main__":
     import sys

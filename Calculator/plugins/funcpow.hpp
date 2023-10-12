@@ -3,6 +3,6 @@
 namespace MyFunc
 {
 
-extern "C" double Pow(double x, double y);
+extern "C" double pow(double x, double y);
 
 }

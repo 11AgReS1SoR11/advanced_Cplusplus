@@ -9,9 +9,8 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
+include_directories(../plugins)
+
 add_executable(tests test.cpp ../Parser.cpp ../Sorter.cpp ../Calculator.cpp)
 target_link_libraries(tests PRIVATE 
-    Catch2::Catch2WithMain 
-    funcsin
-    funccos
-    funcpow)
+    Catch2::Catch2WithMain)

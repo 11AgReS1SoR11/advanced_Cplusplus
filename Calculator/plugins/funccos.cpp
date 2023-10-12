@@ -5,7 +5,7 @@
 namespace MyFunc
 {
 
-extern "C" double Cos(double x) 
+extern "C" double cos(double x) 
 {
     return std::cos(x);
 }

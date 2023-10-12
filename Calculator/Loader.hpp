@@ -1,44 +1,59 @@
 #pragma once
 
-#include <iostream>
 #include <dlfcn.h>
 #include <functional>
 #include <string>
 #include <stdexcept>
+#include <filesystem>
 
-class Loader 
-{
+namespace fs = std::filesystem;
+
+class Loader {
 public:
-    Loader() : libraryHandle{nullptr} {}
-
+    Loader() : handle{nullptr} {}
     ~Loader() 
     {
-        if (libraryHandle) 
+        if (handle)
+            dlclose(handle);
+    }
+
+    void* tryLoadFunc(std::string_view libraryPath, std::string_view functionName) 
+    {
+        handle = dlopen(libraryPath.data(), RTLD_LAZY);
+        if (handle) 
         {
-            dlclose(libraryHandle);
+            void* symbol = dlsym(handle, functionName.data());
+            if (symbol) 
+            {
+                return symbol;
+            }
         }
+
+        return nullptr;
     }
 
     template <typename FuncType>
-    std::function<FuncType> loadFunction(std::string_view libraryPath, std::string_view functionName)
+    std::function<FuncType> loadFunction(std::string_view functionName) 
     {
-        libraryHandle = dlopen(libraryPath.data(), RTLD_LAZY);
-        if (!libraryHandle) 
+        for (const auto& dirEntry : fs::recursive_directory_iterator(fs::current_path())) 
         {
-            const char* error = dlerror();
-            throw std::runtime_error("Error loading library: " + std::string(error));
+            if (dirEntry.is_regular_file()) 
+            {
+                if (dirEntry.path().extension() == ".so")
+                {
+                    auto path = dirEntry.path().string();
+                    auto symbol = tryLoadFunc(path, functionName);
+                    if (symbol)
+                    {
+                        return std::function<FuncType>(reinterpret_cast<FuncType*>(symbol));
+                    }
+                }
+            }
         }
 
-        void* symbol = dlsym(libraryHandle, functionName.data());
-        if (!symbol) 
-        {
-            const char* error = dlerror();
-            throw std::runtime_error("Error loading symbol: " + std::string(error));
-        }
-
-        return std::function<FuncType>(reinterpret_cast<FuncType*>(symbol));
+        throw std::runtime_error("Error: function '" + std::string(functionName) + "' not found in any loaded librarys.");
     }
 
 private:
-    void* libraryHandle;
+    void* handle;
 };

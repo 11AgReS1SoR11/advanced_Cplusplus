@@ -3,6 +3,6 @@
 namespace MyFunc
 {
 
-extern "C" double Cos(double x);
+extern "C" double cos(double x);
 
 }

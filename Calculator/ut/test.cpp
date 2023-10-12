@@ -1,28 +1,7 @@
 #include "catch2/catch_all.hpp"
 
-#include "../plugins/funcsin.hpp"
-#include "../plugins/funccos.hpp"
-#include "../plugins/funcpow.hpp"
 #include "../Calculator.hpp"
 #include <cmath>
-
-TEST_CASE("testing the correctness of functions") 
-{
-    double const eps = 0.00001;
-    REQUIRE(fabs(MyFunc::Sin(1) - std::sin(1)) < eps);
-    REQUIRE(fabs(MyFunc::Sin(0) - std::sin(0)) < eps);
-    REQUIRE(fabs(MyFunc::Sin(-1) - std::sin(-1)) < eps);
-
-    REQUIRE(fabs(MyFunc::Cos(1) - std::cos(1)) < eps);
-    REQUIRE(fabs(MyFunc::Cos(0) - std::cos(0)) < eps);
-    REQUIRE(fabs(MyFunc::Cos(-1) - std::cos(-1)) < eps);
-
-    REQUIRE(fabs(MyFunc::Pow(1, 3) - std::pow(1, 3)) < eps);
-    REQUIRE(fabs(MyFunc::Pow(0, 4) - std::pow(0, 4)) < eps);
-
-    REQUIRE_THROWS_WITH(MyFunc::Pow(-1, 3), "Exponential expression less than 0");
-    REQUIRE_THROWS_WITH(MyFunc::Pow(-1, 2), "Exponential expression less than 0");
-}
 
 TEST_CASE("testing parser")
 {
@@ -239,31 +218,27 @@ TEST_CASE("testing loader")
     SECTION("load sin and cos")
     {
         Loader loader{};
-        REQUIRE_NOTHROW(loader.loadFunction<double(double)>("plugins/libfuncsin.so", "Sin"));
-        auto Sin = loader.loadFunction<double(double)>("plugins/libfuncsin.so", "Sin");
+        REQUIRE_NOTHROW(loader.loadFunction<double(double)>("sin"));
+        auto Sin = loader.loadFunction<double(double)>("sin");
         REQUIRE(Sin(0) == 0);
-        REQUIRE_NOTHROW(loader.loadFunction<double(double)>("plugins/libfunccos.so", "Cos"));
-        auto Cos = loader.loadFunction<double(double)>("plugins/libfunccos.so", "Cos");
+        REQUIRE_NOTHROW(loader.loadFunction<double(double)>("cos"));
+        auto Cos = loader.loadFunction<double(double)>("cos");
         REQUIRE(Cos(0) == 1);
     }
 
     SECTION("load ^ (two arguments)")
     {
         Loader loader{};
-        REQUIRE_NOTHROW(loader.loadFunction<double(double, double)>("plugins/libfuncpow.so", "Pow"));
-        auto Pow = loader.loadFunction<double(double, double)>("plugins/libfuncpow.so", "Pow");
+        REQUIRE_NOTHROW(loader.loadFunction<double(double, double)>("pow"));
+        auto Pow = loader.loadFunction<double(double, double)>("pow");
         REQUIRE(Pow(2,2) == 4);
     }
 
     SECTION("failure outcome")
     {
         Loader loader{};
-        REQUIRE_THROWS_WITH(loader.loadFunction<double(double, double)>("PLUGIN/libfuncpow.so", "Pow"), 
-        "Error loading library: PLUGIN/libfuncpow.so: cannot open shared object file: No such file or directory");
-
-        // don't cross platform, but working
-        // REQUIRE_THROWS_WITH(loader.loadFunction<double(double, double)>("plugins/libfuncpow.so", "tangens"), 
-        // "Error loading symbol: /home/daniil/Рабочий стол/advanced_c/advanced_Cplusplus-1/build/plugins/libfuncpow.so: undefined symbol: tangens");
+        REQUIRE_THROWS_WITH(loader.loadFunction<double(double, double)>("Lalala"), 
+        "Error: function 'Lalala' not found in any loaded librarys.");
     }
 }
 

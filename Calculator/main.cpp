@@ -9,7 +9,6 @@ int main()
 
     Calculator calc{};
     std::string expression;
-    
 
     std::cout << "Enter expression: " << std::endl;
     std::getline(std::cin, expression);
