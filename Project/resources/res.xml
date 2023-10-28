@@ -1,0 +1,7 @@
+<HEAD>value=3
+    <CHILD>value=5
+        <CHILD>value=6</CHILD>
+        <CHILD>value=7</CHILD>
+    </CHILD>
+    <CHILD>value=6</CHILD>
+</HEAD>
