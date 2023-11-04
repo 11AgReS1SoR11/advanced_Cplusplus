@@ -13,7 +13,7 @@ int main() {
     // }
     // std::cout << std::endl;
 
-    auto res = XMLResuorce::create("../resources/res.xml");
+    // auto res = XMLResuorce::create("../resources/res.xml");
 
     return 0;
 }
