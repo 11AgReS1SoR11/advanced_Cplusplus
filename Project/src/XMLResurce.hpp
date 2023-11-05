@@ -1,8 +1,7 @@
 #pragma once
 
 #include <string>
-#include <fstream>
-#include <iostream>
+#include "Logger.hpp"
 #include "Tree.hpp"
 #include "Reader.hpp"
 
@@ -10,6 +9,7 @@ class XMLResuorce
 {
 public:
     using Iterator = Tree::Iterator;
+    using TokenIter = std::vector<std::pair<std::string, std::string>>::iterator;
 
     static std::unique_ptr<XMLResuorce> create(const std::string& path) 
     {
@@ -17,38 +17,21 @@ public:
         return std::unique_ptr<XMLResuorce>(new XMLResuorce{tokens});
     }
 
-    Iterator begin()
-    {
-        return data.begin();
-    }
+    Iterator find(const std::string& name, const std::string& value) const noexcept;
 
-    Iterator end()
-    {
-        return data.end();
-    }
+    Iterator add(const std::string& name, const std::string& value, Iterator it);
 
-private:
-    XMLResuorce(std::vector<std::pair<std::string, std::string>>& tokens)
-    {
-        auto tokenBegin = tokens.begin();
-        auto dataBegin = data.begin();
-        data.Add(std::move(tokenBegin->first), std::move(tokenBegin->second), data.begin());
-        dataBegin = data.begin();
-        ++tokenBegin;
-        recursiveAdd(tokenBegin, dataBegin);
-    }
+    bool erase(Iterator eraseIt);
 
-    void recursiveAdd(std::vector<std::pair<std::string, std::string>>::iterator& it, Iterator cur)
-    {
-        while (it->first != "")
-        {
-            data.Add(std::move(it->first), std::move(it->second), cur);
-            Iterator newCur{cur};
-            recursiveAdd(++it, ++newCur);
-        }
-        ++it;
-    }
+    Iterator begin() const noexcept;
+
+    Iterator end() const noexcept;
 
 private:
-    Tree data; // data seems like tree
+    XMLResuorce(std::vector<std::pair<std::string, std::string>>& tokens);
+
+    void recursiveAdd(TokenIter& it, TokenIter& tokenEnd, Iterator cur);
+
+    Tree p_data; // data seems like tree
+    Logger& logger;
 };

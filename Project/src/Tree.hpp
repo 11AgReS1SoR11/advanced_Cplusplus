@@ -10,16 +10,16 @@ class Tree;
 class Node 
 {
 public:
-    Node(const std::string& _name, const std::string& _data) : name(_name), data(_data) {}
+    Node(const std::string& _name, const std::string& _data) : p_name(_name), p_data(_data) {}
 
     std::string getName() const noexcept
     {
-        return name;
+        return p_name;
     }
 
     std::string getData() const noexcept
     {
-        return data;
+        return p_data;
     }
 
     bool withoutChildren() const noexcept
@@ -27,9 +27,14 @@ public:
         return children.empty();
     }
 
+    std::size_t countChildren() const noexcept
+    {
+        return children.size();
+    }
+
 private:
-    std::string name;
-    std::string data;
+    std::string p_name;
+    std::string p_data;
     std::vector<std::unique_ptr<Node>> children;
 
     void addChild(std::unique_ptr<Node> child) 
@@ -57,98 +62,49 @@ public:
         using pointer = Node*;
         using reference = Node&;
 
-        Iterator(Node* ptr) : ptr_(ptr) {}
+        Iterator(Node* ptr) : p_nodePtr(ptr) {}
 
-        Iterator& operator++()
+        Iterator& operator++();
+
+        reference operator*() noexcept
         {
-            addNextIters();
-            if (nextNodes.empty()) 
-            {
-                ptr_ = nullptr;
-            } 
-            else 
-            {
-                ptr_ = nextNodes.top();
-                nextNodes.pop();
-            }
-            return *this;
+            return *p_nodePtr;
         }
 
-        reference operator*()
+        pointer operator->() noexcept
         {
-            return *ptr_;
+            return p_nodePtr;
         }
 
-        pointer operator->()
+        const pointer operator->() const noexcept
         {
-            return ptr_;
+            return p_nodePtr;
         }
 
-        // value_type operator*() const
-        // {
-        //     return *ptr_;
-        // }
-
-        const pointer operator->() const
+        bool operator==(const Iterator& other) const noexcept
         {
-            return ptr_;
+            return p_nodePtr == other.p_nodePtr;
         }
 
-        bool operator==(const Iterator& other) const
+        bool operator!=(const Iterator& other) const noexcept
         {
-            return ptr_ == other.ptr_;
-        }
-
-        bool operator!=(const Iterator& other) const
-        {
-            return ptr_ != other.ptr_;
+            return p_nodePtr != other.p_nodePtr;
         }
 
     private:
-        Node* ptr_;
+        Node* p_nodePtr;
 
-        std::stack<Node*> nextNodes;
-        void addNextIters() 
-        {
-            if (ptr_ == nullptr) 
-                return;
-
-            for (auto it = ptr_->children.rbegin(); it != ptr_->children.rend(); ++it) 
-            {
-                nextNodes.push(it->get());
-            }
-        }
+        std::stack<Node*> p_nextNodes;
+        void addNextIters();
     };
 
-    Iterator begin() 
-    {
-        return Iterator{p_head.get()};
-    }
+    Iterator begin() const noexcept;
 
-    Iterator end() 
-    {
-        return Iterator{nullptr};
-    }
+    Iterator end() const noexcept;
 
-    void Add(const std::string& _name, const std::string& _data, Iterator member = Iterator{nullptr}) 
-    {
-        if (p_head == nullptr)
-        {
-            p_head = std::make_unique<Node>(_name, _data);
-            return;
-        }
+    Iterator Add(const std::string& _name, const std::string& _data, Iterator member = Iterator{nullptr});
 
-        if (member == end())
-        {
-            auto child = std::make_unique<Node>(_name, _data);
-            p_head->addChild(std::move(child));
-        } 
-        else
-        {
-            auto child = std::make_unique<Node>(_name, _data);
-            member->addChild(std::move(child));
-        }
-    }
+    bool erase(Iterator member);
 
 private:
     std::unique_ptr<Node> p_head;

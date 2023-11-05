@@ -1,19 +1,25 @@
 #include <iostream>
-// #include "Tree.hpp"
-// #include "XMLResurce.hpp"
+#include "XMLResurce.hpp"
 
-int main() {
-    // Tree myTree("name", "1");
-    // myTree.Add("name", "2");
-    // myTree.Add("name", "3");
-    // myTree.Add("name", "4");
+int main() 
+{
+    auto XMLres = XMLResuorce::create("../resources/res.xml");
 
-    // for (auto it = myTree.begin(); it != myTree.end(); ++it) {
-    //     std::cout << (*it)->getData() << " ";
-    // }
-    // std::cout << std::endl;
+    std::cout << "Before:" << std::endl;
+    for (auto it = XMLres->begin(); it != XMLres->end(); ++it)
+    {
+        std::cout << "name: [" << it->getName() << "] value: [" << it->getData() << "]" << std::endl;
+    }
 
-    // auto res = XMLResuorce::create("../resources/res.xml");
+    XMLres->add("CHILD3", "value=6", XMLres->begin());
+
+    XMLres->erase(XMLres->find("HEAD", "value=1"));
+
+    std::cout << "After:" << std::endl;
+    for (auto it = XMLres->begin(); it != XMLres->end(); ++it)
+    {
+        std::cout << "name: [" << it->getName() << "] value: [" << it->getData() << "]" << std::endl;
+    }
 
     return 0;
 }

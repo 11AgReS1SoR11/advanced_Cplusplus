@@ -85,6 +85,28 @@ TEST_CASE("Testing XMLResurces")
         ++it;
 
         REQUIRE(it == x->end());
+
+        SECTION("find")
+        {
+            XMLResuorce::Iterator iter = x->find("CHILD12", "value=4");
+            REQUIRE(iter != x->end());
+
+            iter = x->find("LALALALA", "value=4");
+            REQUIRE(iter == x->end());
+        }
+
+        SECTION("add")
+        {
+            auto iter = x->add("CHILD3", "value=6", x->begin());
+            REQUIRE(iter->getName() == "CHILD3");
+            REQUIRE(iter->getData() == "value=6");
+        }
+
+        SECTION("erase")
+        {
+            bool flag = x->erase(x->begin());
+            REQUIRE(flag);
+        }
     }
 
     SECTION("failure outcome")
