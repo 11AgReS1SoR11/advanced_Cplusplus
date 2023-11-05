@@ -21,7 +21,15 @@ private:
         for (auto& token : tokens)
         {
             std::cout << "name: [" << token.first << "] value: [" << token.second << "]" << std::endl;
-            data.Add(std::move(token.first), std::move(token.second), data.p_head);
+            if (token.first.empty())
+            {
+                //data.Add(std::move(token.first), std::move(token.second));
+            }
+            else
+            {
+                data.Add(std::move(token.first), std::move(token.second));
+            }
+            
         }
     }
 

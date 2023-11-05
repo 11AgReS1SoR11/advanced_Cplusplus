@@ -11,10 +11,6 @@ TEST_CASE("Testing Reader")
     {
         auto x = Reader::takeData("../resources/res.xml");
         REQUIRE(!x.empty());
-        for (auto elem : x)
-        {
-            std::cout << "name: [" << elem.first << "] value: [" << elem.second << "]" << std::endl;
-        }
     }
 
     SECTION("failure outcome")
@@ -28,31 +24,30 @@ TEST_CASE("Testing Tree")
 {
     SECTION("successful outcome")
     {
-        Tree x{"name", "data"};
+        Tree x{"name1", "data1"};
 
-        x.Add("name2", "data2", x.p_head);
+        REQUIRE_NOTHROW(x.Add("name2", "data2"));
+        REQUIRE_NOTHROW(x.Add("name1_child", "data1_child", x.begin()));
 
-        x.Add("name3", "data3", x.p_head->children.back());
-        x.Add("name33", "data33", x.p_head->children.back());
+        auto it = x.begin();
 
-        std::cout << x.p_head->name << " - " << x.p_head->data << std::endl;
+        REQUIRE(it->getName() == "name1");
+        REQUIRE(it->getData() == "data1");
 
-        for (auto& mem : x.p_head->children)
-        {
-            std::cout << mem->name << " - " << mem->data << std::endl;
-            for (auto& mem2 : mem->children)
-            {
-                std::cout << mem2->name << " - " << mem2->data << std::endl;
-            }
-        }
+        ++it;
 
+        REQUIRE(it->getName() == "name2");
+        REQUIRE(it->getData() == "data2");
 
+        ++it;
+
+        REQUIRE(it->getName() == "name1_child");
+        REQUIRE(it->getData() == "data1_child");
+
+        ++it;
+
+        REQUIRE(it == x.end());
     }
-
-    // SECTION("failure outcome")
-    // {
-    //     REQUIRE_THROWS_WITH(Reader::takeData("LALALALALA"), "Failed to open the XML file");
-    // }
 }
 
 
@@ -61,10 +56,5 @@ TEST_CASE("Testing XMLResurces")
     SECTION("successful outcome")
     {
         auto x = XMLResuorce::create("../resources/res.xml");
-
-        for (auto y = x->data.begin(); y != x->data.end(); y++)
-        {
-            std::cout << (*y)->data << std::endl;
-        }
     }
 }
