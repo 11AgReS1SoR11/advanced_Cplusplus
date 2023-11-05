@@ -19,33 +19,43 @@ struct Reader
         
         std::vector<std::pair<std::string, std::string>> tokens;
         std::string token;
-        while (std::getline(file, token, '<')) // TODO: remove spaces
+        std::getline(file, token, '<'); // get line before text
+        while (std::getline(file, token, '<'))
         {
             auto sep = token.find('>');
-            if (sep == std::string::npos) { continue; }
+
+            if (sep == std::string::npos)
+            {
+                throw std::runtime_error("Incorrect XML data");
+            }
+
             std::string name = token.substr(0, sep);
 
-            if (name[0] == '/') { tokens.push_back(std::pair<std::string, std::string>{}); continue; } // end name -> add empty object
+            if (name[0] == '/') { tokens.push_back(std::pair<std::string, std::string>{"", ""}); continue; } // end name -> add empty object
     
             std::string data = token.substr(sep+1);
 
-            std::pair<std::string, std::string> XMLdata;
-
-            // name
-            if (!name.empty())
+            if (name.empty() || data.empty())
             {
-                XMLdata.first = std::move(name);
+                throw std::runtime_error("Incorrect XML data"); 
             }
 
-            // data
-            if (!data.empty())
-            {
-                XMLdata.second = std::move(data);
-            }
+            deleteLastSpaces(name);
+            deleteLastSpaces(data);
+
+            std::pair<std::string, std::string> XMLdata{std::move(name), std::move(data)};
 
             tokens.push_back(std::move(XMLdata));
         }
         
         return tokens;
+    }
+
+    static void deleteLastSpaces(std::string& str) noexcept
+    {
+        while (!str.empty() && (str.back() == ' ' || str.back() == '\n')) 
+        {
+            str.pop_back();
+        }
     }
 };

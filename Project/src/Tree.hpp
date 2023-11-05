@@ -50,9 +50,6 @@ public:
 
     Tree() = default;
 
-private:
-    std::unique_ptr<Node> p_head;
-
     class Iterator
     {
     public:
@@ -60,19 +57,19 @@ private:
         using pointer = Node*;
         using reference = Node&;
 
-        Iterator(Node* ptr) : ptr_(ptr) { initializeNextNode(); }
+        Iterator(Node* ptr) : ptr_(ptr) {}
 
-        Iterator& operator++() 
+        Iterator& operator++()
         {
-            if (nodeStack.empty()) 
+            addNextIters();
+            if (nextNodes.empty()) 
             {
                 ptr_ = nullptr;
             } 
             else 
             {
-                ptr_ = nodeStack.top();
-                nodeStack.pop();
-                initializeNextNode();
+                ptr_ = nextNodes.top();
+                nextNodes.pop();
             }
             return *this;
         }
@@ -110,18 +107,19 @@ private:
     private:
         Node* ptr_;
 
-        std::stack<Node*> nodeStack;
-        void initializeNextNode() 
+        std::stack<Node*> nextNodes;
+        void addNextIters() 
         {
-            if (ptr_ == nullptr) return;
+            if (ptr_ == nullptr) 
+                return;
+
             for (auto it = ptr_->children.rbegin(); it != ptr_->children.rend(); ++it) 
             {
-                nodeStack.push(it->get());
+                nextNodes.push(it->get());
             }
         }
     };
 
-public:
     Iterator begin() 
     {
         return Iterator{p_head.get()};
@@ -134,17 +132,16 @@ public:
 
     void Add(const std::string& _name, const std::string& _data, Iterator member = Iterator{nullptr}) 
     {
+        if (p_head == nullptr)
+        {
+            p_head = std::make_unique<Node>(_name, _data);
+            return;
+        }
+
         if (member == end())
         {
-            if (p_head == nullptr)
-            {
-                p_head = std::make_unique<Node>(_name, _data);
-            }
-            else
-            {
-                auto child = std::make_unique<Node>(_name, _data);
-                p_head->addChild(std::move(child));
-            }
+            auto child = std::make_unique<Node>(_name, _data);
+            p_head->addChild(std::move(child));
         } 
         else
         {
@@ -152,4 +149,7 @@ public:
             member->addChild(std::move(child));
         }
     }
+
+private:
+    std::unique_ptr<Node> p_head;
 };

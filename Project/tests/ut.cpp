@@ -56,5 +56,39 @@ TEST_CASE("Testing XMLResurces")
     SECTION("successful outcome")
     {
         auto x = XMLResuorce::create("../resources/res.xml");
+
+        auto it = x->begin();
+
+        REQUIRE(it->getName() == "HEAD");
+        REQUIRE(it->getData() == "value=1");
+
+        ++it;
+
+        REQUIRE(it->getName() == "CHILD1");
+        REQUIRE(it->getData() == "value=2");
+
+        ++it;
+
+        REQUIRE(it->getName() == "CHILD11");
+        REQUIRE(it->getData() == "value=3");
+
+        ++it;
+
+        REQUIRE(it->getName() == "CHILD12");
+        REQUIRE(it->getData() == "value=4");
+
+        ++it;
+
+        REQUIRE(it->getName() == "CHILD2");
+        REQUIRE(it->getData() == "value=5");
+
+        ++it;
+
+        REQUIRE(it == x->end());
+    }
+
+    SECTION("failure outcome")
+    {
+        REQUIRE_THROWS_WITH(XMLResuorce::create("../resources/lalalal"), "Failed to open the XML file");
     }
 }
