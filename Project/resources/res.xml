@@ -1,0 +1,7 @@
+<HEAD>value=1
+    <CHILD1>value=2
+        <CHILD11>value=3</CHILD11>
+        <CHILD12>value=4</CHILD12>
+    </CHILD1>
+    <CHILD2>value=5</CHILD2>
+</HEAD>
